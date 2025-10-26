@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine Catalog</title>
+    
+    <style>
+        /* --- CUSTOM CSS STYLES (TEAL/SAGE THEME) --- */
+        :root {
+            --dashboard-bg: #395B64;
+            --card-gradient-start: #5F7A69;
+            --card-gradient-end: #7F9986;
+            --primary-hover: #BCCDB5;
+            --text-color: #F4F4F4;
+            --shadow: rgba(0,0,0,0.5);
+            --dark-text: #F4F4F4;
+            --input-text-color: #F4F4F4;
+            --placeholder-color: #C0C0C0;
+            --table-header-bg: #4A6E77;
+            --table-row-bg: #557780;
+            --error-text-color: #F8B4B4;
+            --error-bg-color: #a83228;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap');
+
+        body { background-color: var(--dashboard-bg); color: var(--text-color); min-height: 100vh; }
+
+        .main-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h2 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: var(--text-color);
+        }
+
+        .search-container {
+            margin-bottom: 32px;
+        }
+
+        #search-input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background-color: var(--table-header-bg);
+            color: var(--input-text-color);
+            font-size: 1em;
+            outline: none;
+        }
+        #search-input:focus {
+            border-color: var(--primary-hover);
+            background-color: #426068;
+        }
+        #search-input::placeholder {
+            color: var(--placeholder-color);
+        }
+
+        .card {
+            background: var(--dashboard-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px var(--shadow);
+            margin-top: 20px;
+            overflow-x: auto;
+            border: 1px solid var(--card-gradient-start);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            color: var(--dark-text);
+            min-width: 700px;
+        }
+        th, td {
+            padding: 14px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+        }
+        th {
+            background-color: var(--card-gradient-start);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+        }
+        tbody tr {
+            background-color: var(--table-row-bg);
+            transition: background-color 0.2s;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #5C828D;
+        }
+        tbody tr:hover {
+            background-color: var(--card-gradient-end);
+            color: #333;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 40px;
+            color: #ccc;
+            display: none;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid var(--primary-hover);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: var(--error-bg-color);
+            color: var(--error-text-color);
+            font-weight: 500;
+        }
+
+        .no-results-message {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: var(--table-header-bg);
+            color: white;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-wrapper">
+    <header>
+        <h2>Medicines</h2>
+    </header>
+
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="Search by ID, Drug, or Brand...">
+    </div>
+
+    <div class="card">
+        <div id="medicine-list-container">
+            <div id="loading-state" class="loading-state">
+                <div class="spinner"></div>
+                <p class="loading-text">Loading medicine data...</p>
+            </div>
+            <div id="initial-content"></div>
+        </div>
+    </div>
+
+    <div id="no-results" class="no-results-message">
+        No medicines found matching your search criteria.
+    </div>
+</div>
+
+<script>
+const DATA_URL = 'medicines.json'; // use relative path to fix CORS
+const DB_NAME = 'MedicineDB';
+const DB_VERSION = 4;
+const STORE_NAME = 'medicines';
+
+const searchInput = document.getElementById('search-input');
+const noResultsMessage = document.getElementById('no-results');
+const loadingState = document.getElementById('loading-state');
+const initialContent = document.getElementById('initial-content');
+
+let medicineData = [];
+let db;
+
+function setLoading(isLoading) {
+    loadingState.style.display = isLoading ? 'block' : 'none';
+    initialContent.style.opacity = isLoading ? '0.5' : '1';
+}
+
+function openDatabase() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        request.onerror = (e) => reject(e.target.error);
+        request.onsuccess = (e) => {
+            db = e.target.result;
+            resolve(db);
+        };
+        request.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (db.objectStoreNames.contains(STORE_NAME)) db.deleteObjectStore(STORE_NAME);
+            db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+        };
+    });
+}
+
+function saveDataToIndexDB(data) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction([STORE_NAME], 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        data.forEach(item => store.put(item));
+        tx.oncomplete = () => resolve();
+        tx.onerror = (e) => reject(e.target.error);
+    });
+}
+
+function loadDataFromIndexDB() {
+    return new Promise((resolve) => {
+        const tx = db.transaction([STORE_NAME], 'readonly');
+        const store = tx.objectStore(STORE_NAME);
+        const req = store.getAll();
+        req.onsuccess = (e) => resolve(e.target.result.length > 0 ? e.target.result : null);
+        req.onerror = () => resolve(null);
+    });
+}
+
+async function fetchMedicineData() {
+    setLoading(true);
+    try {
+        await openDatabase();
+        const cachedData = await loadDataFromIndexDB();
+        if (cachedData) {
+            medicineData = cachedData;
+            setLoading(false);
+            renderMedicineList(medicineData);
+            return;
+        }
+
+        const response = await fetch(DATA_URL);
+        const data = await response.json();
+
+        medicineData = data;
+        await saveDataToIndexDB(data);
+
+        setLoading(false);
+        renderMedicineList(data);
+    } catch (err) {
+        console.error('Error loading data:', err);
+        setLoading(false);
+        initialContent.innerHTML = `
+            <div class="error-message">
+                <p>Error Loading Data</p>
+                <p>${err.message}</p>
+            </div>`;
+    }
+}
+
+function renderMedicineList(data) {
+    initialContent.innerHTML = '';
+    if (data.length === 0) {
+        noResultsMessage.style.display = 'block';
+        return;
+    }
+    noResultsMessage.style.display = 'none';
+
+    let html = `
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Drug</th>
+                    <th>Brand</th>
+                    <th>Dosage</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    data.forEach(item => {
+        html += `
+            <tr>
+                <td>${item.id || '-'}</td>
+                <td>${item.Drug || 'N/A'}</td>
+                <td>${item.Brand || 'N/A'}</td>
+                <td>${item.Dosage || 'N/A'}</td>
+                <td>${item.Price || 'N/A'}</td>
+            </tr>
+        `;
+    });
+    html += '</tbody></table>';
+    initialContent.innerHTML = html;
+}
+
+function handleSearch() {
+    const query = searchInput.value.toLowerCase().trim();
+    const filtered = medicineData.filter(item =>
+        (item.Drug && item.Drug.toLowerCase().includes(query)) ||
+        (item.Brand && item.Brand.toLowerCase().includes(query)) ||
+        (String(item.id).includes(query)) ||
+        (item.Dosage && item.Dosage.toLowerCase().includes(query))
+    );
+    renderMedicineList(filtered);
+}
+
+window.onload = () => {
+    fetchMedicineData();
+    searchInput.addEventListener('input', handleSearch);
+};
+</script>
+
+</body>
+</html>

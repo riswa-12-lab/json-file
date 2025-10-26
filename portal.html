@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>MediSphere Patient Portal</title>
+    <link rel="stylesheet" href="pstyle.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+    <div id="portal-parent">
+        
+        <header class="top-header">
+            <div class="header-logo">MediSphere</div>
+            <div class="user-info">
+                <span class="user-name"></span>
+                <button class="logout-button"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </header>
+
+        <aside class="nav-sidebar">
+            <div class="nav-item active" data-section="dashboard"><i class="fas fa-th-large"></i> Dashboard</div>
+            <div class="nav-item" data-section="appointments"><i class="fas fa-calendar-check"></i> Appointments</div>
+            <div class="nav-item" data-section="profile"><i class="fas fa-user-circle"></i> Profile</div>
+            <div class="nav-item" data-section="medical-history"><i class="fas fa-notes-medical"></i> Medical History</div>
+            <div class="nav-item" data-section="pharmacy"><i class="fas fa-prescription-bottle-alt"></i> Prescription Refill</div>
+            <div class="nav-item" data-section="doctors-list"><i class="fas fa-user-tie"></i> Available Doctors</div>
+        </aside>
+
+        <main class="main-content">
+
+            <section id="dashboard" class="section">
+                <h2><i class="fas fa-th-large" style="margin-right: 10px;"></i> Dashboard</h2>
+                
+                <div class="dashboard-grid">
+                    
+                    <div class="card calendar-widget" style="grid-column: 1 / 2; grid-row: 1 / 2; min-height: 400px;">
+                        <h3><i class="fas fa-calendar-alt"></i> Appointment Calendar</h3>
+                        <div class="calendar-header" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
+                            <button id="prev-month-btn" class="calendar-nav-btn"><i class="fas fa-chevron-left"></i></button>
+                            <h4 id="current-month-year" style="font-size: 1.2em; margin: 0; color: var(--primary-hover);">October 2025</h4>
+                            <button id="next-month-btn" class="calendar-nav-btn"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                        <table class="calendar" style="width: 100%; table-layout: fixed; background: rgba(255, 255, 255, 0.05); border-radius: 8px;">
+                            <thead>
+                                <tr>
+                                    <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
+                                </tr>
+                            </thead>
+                            <tbody id="calendar-body">
+                                </tbody>
+                        </table>
+                        <p style="text-align: center; margin-top: 15px; font-size: 0.9em;">Click a date to book an appointment.</p>
+                    </div>
+                    
+                    <div class="card" id="next-visit-card" style="grid-column: 2 / 3; grid-row: 1 / 2; min-height: 120px;">
+                        <h3><i class="fas fa-user-md"></i> My Next Visit</h3>
+                        <div class="info">
+                            <p class="doctor-name" id="next-visit-doctor">No Appointment Scheduled</p>
+                            <p class="date-time" id="next-visit-date-time">Select a date from the calendar to book.</p>
+                        </div>
+                        <button class="primary-button" style="margin: 0; align-self: flex-start;" onclick="showSection('appointments')">Manage Appointments</button>
+                    </div>
+
+                    <div class="card" id="medical-vitals-card" style="grid-column: 2 / 3; grid-row: 2 / 3; min-height: 120px;">
+                        <h3><i class="fas fa-heartbeat"></i> Medical Vitals Snapshot</h3>
+                        <p style="text-align: center; color: var(--primary-hover);">Vitals loading from EMR...</p>
+                    </div>
+                    
+                    <div class="card" id="active-prescriptions-card" style="grid-column: 1 / 2; grid-row: 2 / 3;">
+                        <h3><i class="fas fa-pills"></i> Active Prescriptions</h3>
+                        <div class="prescription-list">
+                            <p style="color: var(--primary-hover);">No active prescriptions found.</p>
+                        </div>
+                        <button class="primary-button" style="width: 100%; margin: 10px 0 0 0;" onclick="showSection('pharmacy')">Request Refill</button>
+                    </div>
+
+                </div>
+            </section>
+
+            <section id="appointments" class="section hidden">
+                <h2><i class="fas fa-calendar-check" style="margin-right: 10px;"></i> Upcoming Appointments</h2>
+                <div class="card">
+                    <h3>Your Scheduled Visits</h3>
+                    <div id="upcoming-appointment-list-detail">
+                        <p style="color: var(--primary-hover);">You have no upcoming appointments.</p>
+                    </div>
+                    <button class="primary-button" onclick="showSection('appointments-details')">Book New Appointment</button>
+                </div>
+            </section>
+
+            <section id="appointments-details" class="section hidden">
+                <h2><i class="fas fa-calendar-plus" style="margin-right: 10px;"></i> Book a New Appointment</h2>
+                <div class="card">
+                    <h3>Booking Details</h3>
+                    <form id="appointment-form-actual">
+                        <div class="form-group">
+                            <label for="appt-date-display">Selected Date</label>
+                            <input type="text" id="appt-date-display" value="No date selected" readonly required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="appt-specialty">Specialty/Service</label>
+                            <select id="appt-specialty" required>
+                                <option value="">-- Select Specialty --</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="appt-doctor">Preferred Doctor</label>
+                            <select id="appt-doctor" required>
+                                <option value="Any">Any Available Doctor</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="appt-reason">Reason for Visit</label>
+                            <textarea id="appt-reason" rows="3"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="primary-button">Confirm Booking</button>
+                        <div id="appointment-message" class="message hidden"></div>
+                    </form>
+                </div>
+            </section>
+
+            <section id="profile" class="section hidden">
+                <h2><i class="fas fa-user-circle" style="margin-right: 10px;"></i> My Profile</h2>
+                <div class="card">
+                    <h3>Personal & Contact Details</h3>
+                    <div style="text-align: center; color: var(--primary-hover); padding: 10px 0;">
+                        <p>Patient profile data to be loaded from authenticated session/DB.</p>
+                        <button class="primary-button" style="margin-top: 10px;">Update Details</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Insurance & Emergency</h3>
+                    <div style="text-align: center; color: var(--primary-hover); padding: 10px 0;">
+                        <p>Insurance and emergency contact data to be loaded dynamically.</p>
+                        <button class="primary-button" style="margin-top: 10px;">Update Insurance</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Medical Summary</h3>
+                    <div style="text-align: center; color: var(--primary-hover); padding: 10px 0;">
+                        <p>Medical summary data to be loaded dynamically.</p>
+                        <button class="primary-button" style="margin-top: 10px;">Update Medical Summary</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="medical-history" class="section hidden">
+                <h2><i class="fas fa-notes-medical" style="margin-right: 10px;"></i> Medical History Summary</h2>
+                
+                <div class="card">
+                    <h3>Past Visits & Diagnoses</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Doctor</th>
+                                <th>Diagnosis</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="past-visits-table-body">
+                            <tr><td colspan="4" style="color:var(--primary-hover); text-align: center;">No past visits found.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <h3>My Recent Medical Note</h3>
+                    <div id="medical-notes-container">
+                        <p style="color: var(--primary-hover); text-align: center;">Loading recent notes...</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Immunization Records</h3>
+                    <div style="text-align: center; color: var(--primary-hover); padding: 10px 0;">
+                        <p>Immunization data to be loaded dynamically.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="pharmacy" class="section hidden">
+                <h2><i class="fas fa-prescription-bottle-alt" style="margin-right: 10px;"></i> Prescription Refill / Pharmacy</h2>
+                
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+                    <div class="card">
+                        <h3>Available Medicines (from IndexedDB)</h3>
+                        <p id="medicine-status" style="margin-bottom: 10px; color: var(--primary-hover);">Loading medicine data...</p>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Drug</th>
+                                    <th>Brand</th>
+                                    <th>Dosage</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody id="medicine-table-body">
+                                <tr><td colspan="5" style="text-align: center;">Retrieving data...</td></tr>
+                            </tbody>
+                        </table>
+                        <button id="reload-medicines-btn" class="primary-button" style="margin-top: 10px;">Refresh Medicine List</button>
+                    </div>
+
+                    <div class="card">
+                        <h3>Request a Medicine/Refill</h3>
+                        <form id="refill-request-form">
+                            <div class="form-group">
+                                <label for="refill-medication-name">Medicine Name:</label>
+                                <input type="text" id="refill-medication-name" placeholder="Enter medicine name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="refill-quantity">Quantity:</label>
+                                <input type="number" id="refill-quantity" value="1" min="1" required>
+                            </div>
+                            <button type="submit" class="primary-button">Submit Request</button>
+                            <div id="prescription-message" class="message hidden"></div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <section id="doctors-list" class="section hidden">
+                <h2><i class="fas fa-user-tie" style="margin-right: 10px;"></i> Available Doctors</h2>
+                <div class="card">
+                    <h3>Our Medical Team (from IndexedDB)</h3>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <button id="reload-doctors-btn" class="primary-button">Fetch & Refresh Doctors</button>
+                        <div id="doctors-status" class="message" style="display:block; margin-left: 10px; color: var(--primary-hover);">Loading doctor data...</div>
+                    </div>
+
+                    <table id="doctors-table" style="margin-top: 15px;">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Specialty</th>
+                                <th>Email</th>
+                                <th>Gender</th>
+                                <th>Address</th>
+                                <th>Telephone</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doctors-table-body">
+                            <tr><td colspan="8" style="color:var(--primary-hover)">No doctor data loaded yet.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="pscript.js" defer></script>
+</body>
+</html>

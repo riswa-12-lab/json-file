@@ -1,0 +1,242 @@
+[
+  {
+    "id": 1,
+    "Brand": "Relafen",
+    "Dosage": "500 mg",
+    "Price": "$18.50"
+  },
+  {
+    "id": 2,
+    "Brand": "Flavor Extract",
+    "Dosage": "10 mg",
+    "Price": "$4.99"
+  },
+  {
+    "id": 3,
+    "Brand": "Malarone",
+    "Dosage": "250mg/100mg",
+    "Price": "$150.00"
+  },
+  {
+    "id": 4,
+    "Brand": "Ativan",
+    "Dosage": "1 mg",
+    "Price": "$12.00"
+  },
+  {
+    "id": 5,
+    "Brand": "Homeo Cold & Flu Relief",
+    "Dosage": "Various",
+    "Price": "$8.75"
+  },
+  {
+    "id": 6,
+    "Brand": "Urecholine",
+    "Dosage": "25 mg",
+    "Price": "$35.00"
+  },
+  {
+    "id": 7,
+    "Brand": "Vicodin",
+    "Dosage": "5 mg/325 mg",
+    "Price": "$25.99"
+  },
+  {
+    "id": 8,
+    "Brand": "Xanax",
+    "Dosage": "0.5 mg",
+    "Price": "$15.00"
+  },
+  {
+    "id": 9,
+    "Brand": "Nighttime Cold Relief",
+    "Dosage": "Various",
+    "Price": "$9.50"
+  },
+  {
+    "id": 10,
+    "Brand": "Senokot-S",
+    "Dosage": "50mg/8.6mg",
+    "Price": "$11.25"
+  },
+  {
+    "id": 11,
+    "Brand": "Homeopathic Cough Syrup",
+    "Dosage": "5 ml",
+    "Price": "$14.99"
+  },
+  {
+    "id": 12,
+    "Brand": "Desyrel",
+    "Dosage": "50 mg",
+    "Price": "$8.00"
+  },
+  {
+    "id": 13,
+    "Brand": "Librium",
+    "Dosage": "10 mg",
+    "Price": "$20.50"
+  },
+  {
+    "id": 14,
+    "Brand": "Desyrel",
+    "Dosage": "100 mg",
+    "Price": "$10.00"
+  },
+  {
+    "id": 15,
+    "Brand": "Milk of Magnesia",
+    "Dosage": "1200 mg/15 ml",
+    "Price": "$6.70"
+  },
+  {
+    "id": 16,
+    "Brand": "Diaper Rash Cream",
+    "Dosage": "40%",
+    "Price": "$7.00"
+  },
+  {
+    "id": 17,
+    "Brand": "Tobrex",
+    "Dosage": "0.3% Ophthalmic",
+    "Price": "$42.00"
+  },
+  {
+    "id": 18,
+    "Brand": "Strattera",
+    "Dosage": "40 mg",
+    "Price": "$88.00"
+  },
+  {
+    "id": 19,
+    "Brand": "Vicks VapoRub",
+    "Dosage": "Topical",
+    "Price": "$5.99"
+  },
+  {
+    "id": 20,
+    "Brand": "Benadryl",
+    "Dosage": "25 mg",
+    "Price": "$4.50"
+  },
+  {
+    "id": 21,
+    "Brand": "Lamictal",
+    "Dosage": "100 mg",
+    "Price": "$30.00"
+  },
+  {
+    "id": 22,
+    "Brand": "Tylenol",
+    "Dosage": "325 mg",
+    "Price": "$3.00"
+  },
+  {
+    "id": 23,
+    "Brand": "MiraLAX",
+    "Dosage": "17 g",
+    "Price": "$19.99"
+  },
+  {
+    "id": 24,
+    "Brand": "Apresoline",
+    "Dosage": "25 mg",
+    "Price": "$14.00"
+  },
+  {
+    "id": 25,
+    "Brand": "Altace",
+    "Dosage": "5 mg",
+    "Price": "$16.50"
+  },
+  {
+    "id": 26,
+    "Brand": "Pain Relief Rub",
+    "Dosage": "Topical",
+    "Price": "$10.25"
+  },
+  {
+    "id": 27,
+    "Brand": "Cough Drops",
+    "Dosage": "5 mg",
+    "Price": "$2.50"
+  },
+  {
+    "id": 28,
+    "Brand": "Neurontin",
+    "Dosage": "300 mg",
+    "Price": "$28.00"
+  },
+  {
+    "id": 29,
+    "Brand": "Allegra",
+    "Dosage": "180 mg",
+    "Price": "$17.99"
+  },
+  {
+    "id": 30,
+    "Brand": "Pepcid",
+    "Dosage": "20 mg",
+    "Price": "$9.80"
+  },
+  {
+    "id": 31,
+    "Brand": "Razadyne",
+    "Dosage": "8 mg",
+    "Price": "$65.00"
+  },
+  {
+    "id": 32,
+    "Brand": "Risperdal",
+    "Dosage": "2 mg",
+    "Price": "$11.50"
+  },
+  {
+    "id": 33,
+    "Brand": "Norvasc",
+    "Dosage": "5 mg",
+    "Price": "$13.25"
+  },
+  {
+    "id": 34,
+    "Brand": "Sunscreen Lotion",
+    "Dosage": "SPF 30",
+    "Price": "$11.00"
+  },
+  {
+    "id": 35,
+    "Brand": "Trandate",
+    "Dosage": "200 mg",
+    "Price": "$22.00"
+  },
+  {
+    "id": 36,
+    "Brand": "Mevacor",
+    "Dosage": "20 mg",
+    "Price": "$19.00"
+  },
+  {
+    "id": 37,
+    "Brand": "Hand Sanitizer",
+    "Dosage": "70%",
+    "Price": "$4.00"
+  },
+  {
+    "id": 38,
+    "Brand": "Wellbutrin",
+    "Dosage": "150 mg",
+    "Price": "$38.50"
+  },
+  {
+    "id": 39,
+    "Brand": "Sport Sunscreen",
+    "Dosage": "SPF 50",
+    "Price": "$14.50"
+  },
+  {
+    "id": 40,
+    "Brand": "Acne Treatment Wash",
+    "Dosage": "2%",
+    "Price": "$7.90"
+  }
+]
